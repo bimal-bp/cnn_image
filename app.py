@@ -5,23 +5,37 @@ import os
 import gdown
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
-# Google Drive model link (direct download)
+# Google Drive link for model
 drive_link = "https://drive.google.com/uc?id=1MGBH4qECimwgJGXLuEv2Y_ZEUV9b0Yql"
 model_path = "resnet_vit_model.h5"
 
-# Silent download if model is missing
+# Download model if not already present
 if not os.path.exists(model_path):
     try:
-        gdown.download(drive_link, model_path, quiet=True)
+        st.info("Downloading model from Google Drive...")
+        gdown.download(drive_link, model_path, quiet=False)
+        st.success("Model downloaded successfully!")
     except Exception as e:
         st.error(f"Error downloading model: {e}")
 
-# Load the model with custom objects (fix Lambda issue)
+# Custom function to load model with Lambda layer fix
+def custom_load_model(model_path):
+    model = tf.keras.models.load_model(model_path, compile=False)
+    for layer in model.layers:
+        if isinstance(layer, tf.keras.layers.Lambda):
+            layer.output_shape = (224, 224, 3)  # Adjust the shape as needed
+    return model
+
+# Load the model
 model = None
-try:
-    model = tf.keras.models.load_model(model_path, compile=False)  # Ensure no compilation issues
-except Exception as e:
-    st.error(f"Error loading model: {e}")
+if os.path.exists(model_path):
+    try:
+        model = custom_load_model(model_path)
+        st.success("Model loaded successfully!")
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+else:
+    st.error(f"Model file '{model_path}' not found!")
 
 # Define class labels
 class_labels = [
@@ -36,7 +50,7 @@ st.write("Upload an image to classify air quality.")
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png"])
 
 def preprocess_image(image):
-    """Preprocess image for model compatibility."""
+    """Preprocess image for both ResNet and ViT (same format)."""
     image = img_to_array(image) / 255.0  # Normalize
     image = np.expand_dims(image, axis=0)  # Add batch dimension
     return image  # Shape: (1, 224, 224, 3)
@@ -49,8 +63,10 @@ if uploaded_file is not None:
             st.error("Model is not loaded. Please check for errors.")
         else:
             try:
-                # Load and preprocess the image
+                # Load and resize the image
                 image = load_img(uploaded_file, target_size=(224, 224))
+
+                # Preprocess image
                 image_preprocessed = preprocess_image(image)
 
                 # Make prediction
