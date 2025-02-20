@@ -6,7 +6,7 @@ import os
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # Google Drive Model URL
-drive_url = "https://drive.google.com/uc?id=1MGBH4qECimwgJGXLuEv2Y_ZEUV9b0Yql"
+drive_url = "https://drive.google.com/file/d/1os3m_b2PYcvCz33Ku_vzRjSkhBh8Y7e5"
 model_path = "mobilenetv2_model.h5"
 
 # Function to download the model from Google Drive
