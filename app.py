@@ -6,7 +6,7 @@ import gdown
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # Google Drive link for model
-drive_link = "https://drive.google.com/file/d/1os3m_b2PYcvCz33Ku_vzRjSkhBh8Y7e5"
+drive_link = "https://drive.google.com/uc?id=1MGBH4qECimwgJGXLuEv2Y_ZEUV9b0Yql"
 model_path = "resnet_vit_model.h5"
 
 # Download model if not already present
@@ -24,6 +24,7 @@ def fix_lambda_layer(model):
         if isinstance(layer, tf.keras.layers.Lambda):
             # Set the output shape explicitly
             if hasattr(layer, 'input_shape') and layer.input_shape is not None:
+                # Assuming the Lambda layer does not change the shape
                 layer.output_shape = layer.input_shape
     return model
 
