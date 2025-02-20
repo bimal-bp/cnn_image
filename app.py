@@ -2,9 +2,18 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
+import gdown  # For downloading files from Google Drive
+
+# Download the model from Google Drive
+drive_url = "https://drive.google.com/uc?id=1MGBH4qECimwgJGXLuEv2Y_ZEUV9b0Yql"
+model_path = "mobilenetv2_model.h5"
+
+# Download the model if it doesn't already exist
+if not os.path.exists(model_path):
+    gdown.download(drive_url, model_path, quiet=False)
 
 # Load the saved model
-model = tf.keras.models.load_model("resnet_vit_model.h5")
+model = tf.keras.models.load_model(model_path)
 
 # Define class labels
 class_labels = ['a_Good', 'b_Moderate', 'c_Unhealthy_for_Sensitive_Groups', 'd_Unhealthy', 'e_Very_Unhealthy', 'f_Severe']
@@ -16,7 +25,7 @@ st.write("Upload an image to classify air quality.")
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png"])
 
 def preprocess_image(image):
-    """Preprocess image for both ResNet and ViT (same format)."""
+    """Preprocess image for the model."""
     image = img_to_array(image) / 255.0  # Normalize
     image = np.expand_dims(image, axis=0)  # Add batch dimension
     return image  # Shape: (1, 224, 224, 3)
@@ -29,12 +38,11 @@ if uploaded_file is not None:
         # Load and resize the image
         image = load_img(uploaded_file, target_size=(224, 224))
 
-        # Preprocess image for both ResNet and ViT (same input format)
-        image_resnet = preprocess_image(image)
-        image_vit = preprocess_image(image)  # ViT also expects (batch, 224, 224, 3)
+        # Preprocess the image
+        image_processed = preprocess_image(image)
 
-        # Make prediction with both inputs
-        predictions = model.predict([image_resnet, image_vit])
+        # Make prediction
+        predictions = model.predict(image_processed)
         predicted_index = np.argmax(predictions)
 
         # Check if the predicted index is within the range of class_labels
