@@ -5,7 +5,7 @@ import os
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # Check if the model file exists
-model_path = "resnet_vit_model.h5"
+model_path = "mobilenetv2_model.h5"
 model = None  # Initialize model variable
 
 if os.path.exists(model_path):
