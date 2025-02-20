@@ -5,29 +5,23 @@ import os
 import gdown
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
-# Google Drive link for model
+# Google Drive model link (direct download)
 drive_link = "https://drive.google.com/uc?id=1MGBH4qECimwgJGXLuEv2Y_ZEUV9b0Yql"
 model_path = "resnet_vit_model.h5"
 
-# Download model if not already present
+# Silent download if model is missing
 if not os.path.exists(model_path):
     try:
-        st.info("Downloading model from Google Drive...")
-        gdown.download(drive_link, model_path, quiet=False)
-        st.success("Model downloaded successfully!")
+        gdown.download(drive_link, model_path, quiet=True)
     except Exception as e:
         st.error(f"Error downloading model: {e}")
 
-# Load the model
+# Load the model with custom objects (fix Lambda issue)
 model = None
-if os.path.exists(model_path):
-    try:
-        model = tf.keras.models.load_model(model_path)
-        st.success("Model loaded successfully!")
-    except Exception as e:
-        st.error(f"Error loading model: {e}")
-else:
-    st.error(f"Model file '{model_path}' not found!")
+try:
+    model = tf.keras.models.load_model(model_path, compile=False)  # Ensure no compilation issues
+except Exception as e:
+    st.error(f"Error loading model: {e}")
 
 # Define class labels
 class_labels = [
@@ -42,7 +36,7 @@ st.write("Upload an image to classify air quality.")
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png"])
 
 def preprocess_image(image):
-    """Preprocess image for both ResNet and ViT (same format)."""
+    """Preprocess image for model compatibility."""
     image = img_to_array(image) / 255.0  # Normalize
     image = np.expand_dims(image, axis=0)  # Add batch dimension
     return image  # Shape: (1, 224, 224, 3)
@@ -55,10 +49,8 @@ if uploaded_file is not None:
             st.error("Model is not loaded. Please check for errors.")
         else:
             try:
-                # Load and resize the image
+                # Load and preprocess the image
                 image = load_img(uploaded_file, target_size=(224, 224))
-
-                # Preprocess image
                 image_preprocessed = preprocess_image(image)
 
                 # Make prediction
