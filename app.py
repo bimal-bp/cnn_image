@@ -39,7 +39,7 @@ def preprocess_image(image):
     return image  # Shape: (1, 224, 224, 3)
 
 if uploaded_file is not None:
-    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+    st.image(uploaded_file, caption="Uploaded Image", use_container_width=True)
     
     if st.button("Classify"):
         if model is None:
