@@ -6,7 +6,7 @@ import gdown  # For downloading files from Google Drive
 import os
 
 # Download the model from Google Drive
-drive_url = "https://drive.google.com/uc?id=1MGBH4qECimwgJGXLuEv2Y_ZEUV9b0Yql"
+drive_url = "https://drive.google.com/file/d/1MGBH4qECimwgJGXLuEv2Y_ZEUV9b0Yql"
 model_path = "mobilenetv2_model.h5"
 
 # Download the model if it doesn't already exist
