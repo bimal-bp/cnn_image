@@ -23,7 +23,8 @@ def fix_lambda_layer(model):
     for layer in model.layers:
         if isinstance(layer, tf.keras.layers.Lambda):
             # Set the output shape explicitly
-            layer.output_shape = layer.input_shape
+            if hasattr(layer, 'input_shape') and layer.input_shape is not None:
+                layer.output_shape = layer.input_shape
     return model
 
 # Load the model
@@ -61,7 +62,7 @@ def preprocess_image(image):
     return image  # Shape: (1, 224, 224, 3)
 
 if uploaded_file is not None:
-    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+    st.image(uploaded_file, caption="Uploaded Image", use_container_width=True)
     
     if st.button("Classify"):
         if model is None:
