@@ -18,19 +18,24 @@ if not os.path.exists(model_path):
     except Exception as e:
         st.error(f"Error downloading model: {e}")
 
-# Custom function to load model with Lambda layer fix
-def custom_load_model(model_path):
-    model = tf.keras.models.load_model(model_path, compile=False)
+# Custom function to fix Lambda layer issue
+def fix_lambda_layer(model):
     for layer in model.layers:
         if isinstance(layer, tf.keras.layers.Lambda):
-            layer.output_shape = (224, 224, 3)  # Adjust the shape as needed
+            # Set the output shape explicitly
+            layer.output_shape = layer.input_shape
     return model
 
 # Load the model
 model = None
 if os.path.exists(model_path):
     try:
-        model = custom_load_model(model_path)
+        # Load the model with `compile=False` to avoid issues
+        model = tf.keras.models.load_model(model_path, compile=False)
+        # Fix the Lambda layer issue
+        model = fix_lambda_layer(model)
+        # Recompile the model if necessary
+        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
         st.success("Model loaded successfully!")
     except Exception as e:
         st.error(f"Error loading model: {e}")
