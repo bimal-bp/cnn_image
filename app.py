@@ -6,7 +6,7 @@ import os
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # Google Drive link for model
-drive_link = "https://drive.google.com/uc?id=1os3m_b2PYcvCz33Ku_vzRjSkhBh8Y7e5orbt"
+drive_link = "https://drive.google.com/file/d/1MGBH4qECimwgJGXLuEv2Y_ZEUV9b0Yql"
 model_path = "resnet_vit_model.h5"
 
 # Download model if not exists
