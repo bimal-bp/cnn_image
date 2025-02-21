@@ -5,10 +5,6 @@ import gdown
 import os
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
-# Google Drive file ID (Extracted from the link)
-drive_file_id = "1MGBH4qECimwgJGXLuEv2Y_ZEUV9b0Yql"
-model_path = "resnet_vit_model.h5"
-
 
 # Function to download model
 def download_model():
