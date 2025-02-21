@@ -72,14 +72,14 @@ if uploaded_file is not None:
                 predictions = model.predict(image_preprocessed)
                 predicted_index = np.argmax(predictions)
                 predicted_class = class_names[predicted_index]
-                confidence = round(100 * np.max(predictions), 2)
+
 
                 # Get AQI details
                 result = aq_descriptions[predicted_class]
 
                 # Display results
                 st.subheader(f"🌡 Prediction: {result['Label']} ({result['Range']})")
-                st.write(f"**Confidence:** {confidence}%")
+
                 st.write(result['Description'])
 
                 # Show warning for hazardous air quality
